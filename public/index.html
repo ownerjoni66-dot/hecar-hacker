@@ -504,5 +504,58 @@ footer {
   .panel,.tool {padding:15px !important;}
 }
 </style>
+
+<!-- HECAR MUSIC PLAYER -->
+<audio id="hecarMusic" loop preload="auto">
+  <source src="/music.mp3" type="audio/mpeg">
+</audio>
+
+<button id="musicBtn" onclick="toggleHecarMusic()"
+style="
+position:fixed;
+right:15px;
+bottom:15px;
+z-index:99999;
+background:#031b10;
+color:#00ff88;
+border:1px solid #00ff88;
+border-radius:30px;
+padding:14px 20px;
+font-weight:bold;
+box-shadow:0 0 15px #00ff88;
+">
+🔊 MUSIC ON
+</button>
+
+<script>
+const hecarMusic = document.getElementById("hecarMusic");
+const musicBtn = document.getElementById("musicBtn");
+
+hecarMusic.volume = 0.4;
+
+// Website খুললেই গান চালানোর চেষ্টা
+window.addEventListener("load", () => {
+  hecarMusic.play().then(() => {
+    musicBtn.textContent = "🔊 MUSIC OFF";
+  }).catch(() => {
+    musicBtn.textContent = "🔊 MUSIC ON";
+  });
+});
+
+// গান চালু ও বন্ধ
+async function toggleHecarMusic() {
+  if (hecarMusic.paused) {
+    try {
+      await hecarMusic.play();
+      musicBtn.textContent = "🔊 MUSIC OFF";
+    } catch (e) {
+      musicBtn.textContent = "⚠️ TRY AGAIN";
+    }
+  } else {
+    hecarMusic.pause();
+    musicBtn.textContent = "🔊 MUSIC ON";
+  }
+}
+</script> 
 </body>
 </html>
