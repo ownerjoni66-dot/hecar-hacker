@@ -64,9 +64,9 @@ app.post("/api/request", async (req, res) => {
       }
     );
 
-    res.json({ id: id });
+    res.json({ id: id })
 
-  } catch (error) {
+    } catch (error) { 
 
     console.error(
       "TELEGRAM ERROR:",
