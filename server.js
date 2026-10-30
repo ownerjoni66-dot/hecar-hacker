@@ -68,15 +68,18 @@ app.post("/api/request", async (req, res) => {
 
   } catch (error) {
 
+    console.error(
+      "TELEGRAM ERROR:",
+      error.response?.body || error.message
+    );
+
     sessions.delete(id);
 
     res.status(500).json({
       error: "Telegram message failed"
     });
 
-  }
-
-});
+}
 
 // APPROVE / REJECT
 bot.on("callback_query", async (query) => {
