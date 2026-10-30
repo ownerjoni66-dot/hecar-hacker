@@ -375,5 +375,134 @@ window.addEventListener("resize", resizeMatrix);
 resizeMatrix();
 drawMatrix();
 </script>
+ 
+<style>
+/* HECAR PREMIUM DESIGN */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #020806 !important;
+  color: #d8ffe9;
+  font-family: Arial, sans-serif;
+}
+
+#matrix {
+  position: fixed;
+  inset: 0;
+  z-index: 0 !important;
+  opacity: .35;
+  pointer-events: none;
+}
+
+header, main, footer {
+  position: relative;
+  z-index: 1;
+}
+
+header {
+  padding: 35px 15px !important;
+  background: linear-gradient(135deg,#071b13,#020806);
+  border-bottom: 1px solid #00ff88;
+  box-shadow: 0 5px 30px #00ff8820;
+}
+
+.logo {
+  font-size: 42px !important;
+  color: #00ff88 !important;
+  text-shadow: 0 0 10px #00ff88, 0 0 30px #00ff88;
+  letter-spacing: 7px !important;
+}
+
+header p {
+  letter-spacing: 3px;
+  font-size: 11px;
+}
+
+main {
+  padding: 20px 14px !important;
+}
+
+.panel, .tool {
+  background: rgba(5, 23, 16, .88) !important;
+  border: 1px solid #087747 !important;
+  border-radius: 16px !important;
+  padding: 22px !important;
+  margin: 18px 0 !important;
+  box-shadow: 0 0 20px #00ff8810,
+              inset 0 0 20px #00ff8808;
+  backdrop-filter: blur(10px);
+}
+
+h2, h3 {
+  color: #00ff88 !important;
+  text-shadow: 0 0 10px #00ff8855;
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.tools-grid button {
+  min-height: 75px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(145deg,#0b3826,#04150e) !important;
+  font-size: 12px;
+  letter-spacing: 1px;
+  box-shadow: 0 0 12px #00ff8815;
+}
+
+button {
+  background: linear-gradient(135deg,#087747,#04351f) !important;
+  border: 1px solid #00ff88 !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  padding: 14px 18px !important;
+  transition: .2s;
+}
+
+button:active {
+  transform: scale(.96);
+  box-shadow: 0 0 20px #00ff88;
+}
+
+input, textarea {
+  background: #020a06 !important;
+  border: 1px solid #176b46 !important;
+  border-radius: 10px !important;
+  color: #00ff88 !important;
+  padding: 15px !important;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #00ff88 !important;
+  box-shadow: 0 0 12px #00ff8844;
+}
+
+.result {
+  border: 1px solid #176b46 !important;
+  border-radius: 10px !important;
+  color: #9dffc4 !important;
+  line-height: 1.7;
+}
+
+.status {
+  color: #00ff88 !important;
+}
+
+footer {
+  border-top: 1px solid #145c3c;
+  letter-spacing: 2px;
+}
+
+@media(max-width:360px) {
+  .logo {font-size:32px !important;}
+  .panel,.tool {padding:15px !important;}
+}
+</style>
 </body>
 </html>
