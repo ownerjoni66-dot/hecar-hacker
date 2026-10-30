@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>HECAR HACKER</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:#000;
+ color:#00ff66;
+ font-family:monospace;
+ overflow-x:hidden;
+}
+
+canvas{
+ position:fixed;
+ inset:0;
+ width:100%;
+ height:100%;
+ z-index:0;
+ pointer-events:none;
+}
+
+.wrap{
+ position:relative;
+ z-index:1;
+ max-width:620px;
+ margin:auto;
+ padding:24px 16px;
+}
+
+.panel{
+ margin:18px 0;
+ padding:20px;
+ border:1px solid #00ff66;
+ border-radius:12px;
+ background:rgba(0,18,7,.92);
+ box-shadow:0 0 16px #00ff6633;
+}
+
+h1{
+ text-align:center;
+ font-size:30px;
+ text-shadow:0 0 14px #00ff66;
+}
+
+.center{text-align:center}
+
+button{
+ width:100%;
+ padding:14px;
+ margin-top:10px;
+ background:#00240d;
+ color:#00ff66;
+ border:1px solid #00ff66;
+ border-radius:7px;
+ font-weight:bold;
+ font-family:inherit;
+ font-size:16px;
+}
+
+button:disabled{opacity:.55}
+
+#status{
+ min-height:48px;
+ line-height:1.6;
+ text-align:center;
+ overflow-wrap:anywhere;
+}
+
+#terminal{
+ line-height:1.8;
+ min-height:100px;
+ overflow-wrap:anywhere;
+}
+
+.small{
+ font-size:12px;
+ color:#9bffba;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<main class="wrap">
+
+<h1>⚡ HECAR HACKER ⚡</h1>
+<p class="center">WELCOME TO MY CYBER WORLD</p>
+
+<section class="panel center">
+<div id="clock">00:00:00</div>
+<p>SECURITY STATUS: ONLINE 🟢</p>
+</section>
+
+<section class="panel">
+<h3 class="center">🔐 ADMIN ACCESS</h3>
+
+<p class="small center">
+Press the button to request permission.
+Admin approval is required.
+</p>
+
+<button id="requestBtn" onclick="requestAccess()">
+REQUEST ACCESS
+</button>
+
+<div id="status">SYSTEM READY</div>
+</section>
+
+<section class="panel">
+
+<h3>⌨ SYSTEM TERMINAL</h3>
+
+<div id="terminal">
+&gt; HECAR interface loaded...
+<br>
+&gt; Waiting for authorized access...
+</div>
+
+<div id="tools" hidden>
+
+<p>&gt; ACCESS GRANTED</p>
+<p>&gt; Welcome to HECAR cyber interface.</p>
+
+<button onclick="addLine('Security demo opened.')">
+OPEN DEMO TOOL
+</button>
+
+<button onclick="exitApp()">
+EXIT APP
+</button>
+
+</div>
+</section>
+
+<p class="center small">
+© 2026 HECAR CYBER SECURITY
+</p>
+
+</main>
+
+<script>
+
+// MATRIX BACKGROUND
+
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
+
+const fontSize=14;
+let drops=[];
+
+function resizeCanvas(){
+
+ canvas.width=window.innerWidth;
+ canvas.height=window.innerHeight;
+
+ drops=Array(
+ Math.ceil(canvas.width/fontSize)
+ ).fill(1);
+
+}
+
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+
+setInterval(()=>{
+
+ ctx.fillStyle="rgba(0,0,0,0.08)";
+ ctx.fillRect(0,0,canvas.width,canvas.height);
+
+ ctx.fillStyle="#00ff66";
+ ctx.font=fontSize+"px monospace";
+
+ drops.forEach((y,i)=>{
+
+ ctx.fillText(
+ Math.random()>.5?"1":"0",
+ i*fontSize,
+ y*fontSize
+ );
+
+ drops[i]=
+ y*fontSize>canvas.height &&
+ Math.random()>.975 ? 0 : y+1;
+
+ });
+
+},45);
+
+
+// LIVE CLOCK
+
+function updateClock(){
+
+ document.getElementById("clock")
+ .textContent=new Date().toLocaleTimeString();
+
+}
+
+updateClock();
+setInterval(updateClock,1000);
+
+
+// LOGIN SYSTEM
+
+let sessionId=null;
+let pollTimer=null;
+let approved=false;
+
+const statusEl=document.getElementById("status");
+const requestBtn=document.getElementById("requestBtn");
+
+function addLine(message){
+
+ const line=document.createElement("div");
+ line.textContent="> "+message;
+
+ document.getElementById("terminal")
+ .appendChild(line);
+
+}
+
+
+// REQUEST ACCESS
+
+async function requestAccess(){
+
+ requestBtn.disabled=true;
+
+ statusEl.textContent=
+ "SENDING REQUEST TO ADMIN...";
+
+ try{
+
+ const response=await fetch("/api/request",{
+
+ method:"POST",
+
+ headers:{
+ "Content-Type":"application/json"
+ },
+
+ body:JSON.stringify({
+
+ device:navigator.userAgent.slice(0,100)
+
+ })
+
+ });
+
+ const data=await response.json();
+
+ if(!response.ok)
+ throw new Error(data.error||"Request failed");
+
+ sessionId=data.id;
+
+ statusEl.textContent=
+ "WAITING FOR ADMIN APPROVAL...";
+
+ addLine("Approval request sent.");
+
+ pollTimer=setInterval(checkStatus,2500);
+
+ await checkStatus();
+
+ }catch(error){
+
+ statusEl.textContent="ERROR: "+error.message;
+
+ requestBtn.disabled=false;
+
+ }
+
+}
+
+
+// CHECK APPROVAL
+
+async function checkStatus(){
+
+ if(!sessionId)return;
+
+ try{
+
+ const response=await fetch(
+ "/api/status/"+encodeURIComponent(sessionId)
+ );
+
+ const data=await response.json();
+
+ if(data.status==="approved"){
+
+ approved=true;
+
+ clearInterval(pollTimer);
+
+ statusEl.textContent="ACCESS GRANTED ✅";
+
+ document.getElementById("tools").hidden=false;
+
+ requestBtn.hidden=true;
+
+ addLine("ADMIN APPROVED ACCESS.");
+
+ }
+
+ else if(
+ data.status==="rejected" ||
+ data.status==="expired"
+ ){
+
+ clearInterval(pollTimer);
+
+ statusEl.textContent=
+ data.status==="rejected"
+ ? "ACCESS REJECTED ❌"
+ : "REQUEST EXPIRED";
+
+ requestBtn.disabled=false;
+
+ addLine("ACCESS NOT GRANTED.");
+
+ }
+
+ }catch(error){
+
+ statusEl.textContent="CONNECTION ISSUE...";
+
+ }
+
+}
+
+
+// EXIT
+
+async function exitApp(){
+
+ if(sessionId && approved){
+
+ try{
+
+ await fetch("/api/exit",{
+
+ method:"POST",
+
+ headers:{
+ "Content-Type":"application/json"
+ },
+
+ body:JSON.stringify({
+ id:sessionId
+ }),
+
+ keepalive:true
+
+ });
+
+ }catch(error){}
+
+ }
+
+ approved=false;
+ sessionId=null;
+
+ document.getElementById("tools").hidden=true;
+
+ requestBtn.hidden=false;
+ requestBtn.disabled=false;
+
+ statusEl.textContent="YOU HAVE EXITED.";
+
+ addLine("USER EXITED.");
+
+}
+
+
+// BEST EFFORT CLOSE NOTICE
+
+window.addEventListener("pagehide",()=>{
+
+ if(sessionId && approved){
+
+ fetch("/api/exit",{
+
+ method:"POST",
+
+ headers:{
+ "Content-Type":"application/json"
+ },
+
+ body:JSON.stringify({
+ id:sessionId
+ }),
+
+ keepalive:true
+
+ }).catch(()=>{});
+
+ }
+
+});
+
+</script>
+
+</body>
+</html>
