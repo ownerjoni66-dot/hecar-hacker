@@ -3,414 +3,312 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#000000">
-<title>HECAR HACKER</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HECAR | Cyber Security Lab</title>
 <style>
+:root{--green:#00ff88;--bg:#050b0a;--panel:#0b1713;--border:#145c3c}
 *{box-sizing:border-box}
-
-body{
- margin:0;
- background:#000;
- color:#00ff66;
- font-family:monospace;
- overflow-x:hidden;
-}
-
-canvas{
- position:fixed;
- inset:0;
- width:100%;
- height:100%;
- z-index:0;
- pointer-events:none;
-}
-
-.wrap{
- position:relative;
- z-index:1;
- max-width:620px;
- margin:auto;
- padding:24px 16px;
-}
-
-.panel{
- margin:18px 0;
- padding:20px;
- border:1px solid #00ff66;
- border-radius:12px;
- background:rgba(0,18,7,.92);
- box-shadow:0 0 16px #00ff6633;
-}
-
-h1{
- text-align:center;
- font-size:30px;
- text-shadow:0 0 14px #00ff66;
-}
-
-.center{text-align:center}
-
-button{
- width:100%;
- padding:14px;
- margin-top:10px;
- background:#00240d;
- color:#00ff66;
- border:1px solid #00ff66;
- border-radius:7px;
- font-weight:bold;
- font-family:inherit;
- font-size:16px;
-}
-
-button:disabled{opacity:.55}
-
-#status{
- min-height:48px;
- line-height:1.6;
- text-align:center;
- overflow-wrap:anywhere;
-}
-
-#terminal{
- line-height:1.8;
- min-height:100px;
- overflow-wrap:anywhere;
-}
-
-.small{
- font-size:12px;
- color:#9bffba;
-}
+body{margin:0;background:var(--bg);color:#d8ffe9;font-family:Arial,sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;background:repeating-linear-gradient(0deg,transparent 0 3px,#00ff88 4px)}
+header{padding:22px;text-align:center;border-bottom:1px solid var(--border)}
+.logo{font-size:35px;font-weight:bold;color:var(--green);letter-spacing:5px;text-shadow:0 0 15px var(--green)}
+header p{color:#83b99c}
+main{max-width:850px;margin:auto;padding:18px}
+.panel,.tool{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;margin:15px 0;box-shadow:0 0 15px #00ff8810}
+h2,h3{color:var(--green)}
+input,textarea,select{width:100%;padding:13px;margin:8px 0;background:#020806;color:#d8ffe9;border:1px solid var(--border);border-radius:7px;font-size:15px}
+textarea{min-height:90px;resize:vertical}
+button{background:#063b26;color:var(--green);border:1px solid var(--green);padding:12px 15px;border-radius:7px;cursor:pointer;margin:5px;font-weight:bold}
+button:hover{background:#087747;color:white}
+button:disabled{opacity:.5}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.tools-grid button{min-height:55px}
+.result{background:#020806;border:1px solid #145c3c;padding:13px;border-radius:7px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:40px;margin-top:10px;color:#9dffc4}
+.small{font-size:12px;color:#8caa98}
+.hidden{display:none!important}
+.status{color:var(--green)}
+footer{text-align:center;color:#638875;padding:25px}
 </style>
 </head>
-
 <body>
+<header>
+<div class="logo">HECAR</div>
+<p>CYBER SECURITY • LEARN • PROTECT</p>
+<div id="clock" class="status"></div>
+</header>
 
-<canvas id="matrix"></canvas>
-
-<main class="wrap">
-
-<h1>⚡ HECAR HACKER ⚡</h1>
-<p class="center">WELCOME TO MY CYBER WORLD</p>
-
-<section class="panel center">
-<div id="clock">00:00:00</div>
-<p>SECURITY STATUS: ONLINE 🟢</p>
+<main>
+<section id="login" class="panel">
+<h2>ACCESS REQUEST</h2>
+<p>Request access from the administrator.</p>
+<input id="device" placeholder="Your name or device name" maxlength="60">
+<button onclick="requestAccess()" id="requestBtn">REQUEST ACCESS</button>
+<div id="loginResult" class="result">Waiting for request...</div>
 </section>
 
-<section class="panel">
-<h3 class="center">🔐 ADMIN ACCESS</h3>
-
-<p class="small center">
-Press the button to request permission.
-Admin approval is required.
-</p>
-
-<button id="requestBtn" onclick="requestAccess()">
-REQUEST ACCESS
-</button>
-
-<div id="status">SYSTEM READY</div>
-</section>
-
-<section class="panel">
-
-<h3>⌨ SYSTEM TERMINAL</h3>
-
-<div id="terminal">
-&gt; HECAR interface loaded...
-<br>
-&gt; Waiting for authorized access...
+<section id="tools" class="hidden">
+<div class="panel">
+<h2>HECAR TOOLBOX</h2>
+<p class="status">Access approved</p>
+<p class="small">Use these tools only on your own device and websites you are authorized to test.</p>
+<div class="tools-grid">
+<button onclick="showTool('ip')">IP FINDER</button>
+<button onclick="showTool('info')">WEBSITE INFO</button>
+<button onclick="showTool('url')">URL CHECKER</button>
+<button onclick="showTool('password')">PASSWORD CHECK</button>
+<button onclick="showTool('hash')">SHA-256 HASH</button>
+<button onclick="showTool('base64')">BASE64 TOOL</button>
+<button onclick="showTool('security')">SECURITY CHECK</button>
+</div>
 </div>
 
-<div id="tools" hidden>
+<div class="tool" id="ip">
+<h3>01 / Public IP Finder</h3>
+<p class="small">Shows the public IP address seen by an external IP service. It does not reveal an exact home address.</p>
+<button onclick="findIP()">FIND MY IP</button>
+<div class="result" id="ipResult">No result yet.</div>
+</div>
 
-<p>&gt; ACCESS GRANTED</p>
-<p>&gt; Welcome to HECAR cyber interface.</p>
+<div class="tool hidden" id="info">
+<h3>02 / Website Information</h3>
+<input id="infoUrl" placeholder="example.com">
+<button onclick="websiteInfo()">CHECK INFO</button>
+<div class="result" id="infoResult">Enter a website address.</div>
+</div>
 
-<button onclick="addLine('Security demo opened.')">
-OPEN DEMO TOOL
-</button>
+<div class="tool hidden" id="url">
+<h3>03 / Basic URL Safety Check</h3>
+<input id="urlInput" placeholder="https://example.com">
+<button onclick="checkURL()">CHECK URL</button>
+<div class="result" id="urlResult">This is a basic warning checker, not a malware scanner.</div>
+</div>
 
-<button onclick="exitApp()">
-EXIT APP
-</button>
+<div class="tool hidden" id="password">
+<h3>04 / Password Strength Checker</h3>
+<input id="passwordInput" type="password" autocomplete="new-password" placeholder="Enter a test password">
+<button onclick="checkPassword()">CHECK STRENGTH</button>
+<div class="result" id="passwordResult">Your password is checked locally in this browser. It is not sent to our server.</div>
+</div>
 
+<div class="tool hidden" id="hash">
+<h3>05 / SHA-256 Hash Generator</h3>
+<textarea id="hashInput" placeholder="Enter text to create SHA-256 hash"></textarea>
+<button onclick="makeHash()">GENERATE HASH</button>
+<div class="result" id="hashResult">Hash result will appear here.</div>
+</div>
+
+<div class="tool hidden" id="base64">
+<h3>06 / Base64 Encoder / Decoder</h3>
+<textarea id="baseInput" placeholder="Enter text"></textarea>
+<button onclick="encodeBase()">ENCODE</button>
+<button onclick="decodeBase()">DECODE</button>
+<div class="result" id="baseResult">Result will appear here.</div>
+</div>
+
+<div class="tool hidden" id="security">
+<h3>07 / Website Security Check</h3>
+<p class="small">Checks basic security properties of this HECAR website only. This is not a full penetration test.</p>
+<button onclick="securityCheck()">CHECK THIS WEBSITE</button>
+<div class="result" id="securityResult">Press the button to check.</div>
+</div>
+
+<div class="panel">
+<button onclick="exitApp()">EXIT / LOG OUT</button>
 </div>
 </section>
-
-<p class="center small">
-© 2026 HECAR CYBER SECURITY
-</p>
-
 </main>
 
+<footer>HECAR CYBER LAB • Learn ethically. Stay safe.</footer>
+
 <script>
+let sessionId = null;
+let pollTimer = null;
 
-// MATRIX BACKGROUND
-
-const canvas=document.getElementById("matrix");
-const ctx=canvas.getContext("2d");
-
-const fontSize=14;
-let drops=[];
-
-function resizeCanvas(){
-
- canvas.width=window.innerWidth;
- canvas.height=window.innerHeight;
-
- drops=Array(
- Math.ceil(canvas.width/fontSize)
- ).fill(1);
-
+function clock(){
+ document.getElementById("clock").textContent = new Date().toLocaleString();
 }
-
-window.addEventListener("resize",resizeCanvas);
-resizeCanvas();
-
-setInterval(()=>{
-
- ctx.fillStyle="rgba(0,0,0,0.08)";
- ctx.fillRect(0,0,canvas.width,canvas.height);
-
- ctx.fillStyle="#00ff66";
- ctx.font=fontSize+"px monospace";
-
- drops.forEach((y,i)=>{
-
- ctx.fillText(
- Math.random()>.5?"1":"0",
- i*fontSize,
- y*fontSize
- );
-
- drops[i]=
- y*fontSize>canvas.height &&
- Math.random()>.975 ? 0 : y+1;
-
- });
-
-},45);
-
-
-// LIVE CLOCK
-
-function updateClock(){
-
- document.getElementById("clock")
- .textContent=new Date().toLocaleTimeString();
-
-}
-
-updateClock();
-setInterval(updateClock,1000);
-
-
-// LOGIN SYSTEM
-
-let sessionId=null;
-let pollTimer=null;
-let approved=false;
-
-const statusEl=document.getElementById("status");
-const requestBtn=document.getElementById("requestBtn");
-
-function addLine(message){
-
- const line=document.createElement("div");
- line.textContent="> "+message;
-
- document.getElementById("terminal")
- .appendChild(line);
-
-}
-
-
-// REQUEST ACCESS
+setInterval(clock,1000);clock();
 
 async function requestAccess(){
-
- requestBtn.disabled=true;
-
- statusEl.textContent=
- "SENDING REQUEST TO ADMIN...";
-
+ const device=document.getElementById("device").value.trim() || "Mobile user";
+ const out=document.getElementById("loginResult");
+ const btn=document.getElementById("requestBtn");
+ btn.disabled=true;
+ out.textContent="Sending request...";
  try{
-
- const response=await fetch("/api/request",{
-
- method:"POST",
-
- headers:{
- "Content-Type":"application/json"
- },
-
- body:JSON.stringify({
-
- device:navigator.userAgent.slice(0,100)
-
- })
-
- });
-
- const data=await response.json();
-
- if(!response.ok)
- throw new Error(data.error||"Request failed");
-
- sessionId=data.id;
-
- statusEl.textContent=
- "WAITING FOR ADMIN APPROVAL...";
-
- addLine("Approval request sent.");
-
- pollTimer=setInterval(checkStatus,2500);
-
- await checkStatus();
-
- }catch(error){
-
- statusEl.textContent="ERROR: "+error.message;
-
- requestBtn.disabled=false;
-
+  const r=await fetch("/api/request",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({device})
+  });
+  const data=await r.json();
+  if(!r.ok) throw new Error(data.error || "Request failed");
+  sessionId=data.id;
+  out.textContent="Request sent. Waiting for administrator approval...";
+  pollTimer=setInterval(checkStatus,3000);
+ }catch(e){
+  out.textContent="Error: "+e.message;
+  btn.disabled=false;
  }
-
 }
-
-
-// CHECK APPROVAL
 
 async function checkStatus(){
-
  if(!sessionId)return;
-
  try{
-
- const response=await fetch(
- "/api/status/"+encodeURIComponent(sessionId)
- );
-
- const data=await response.json();
-
- if(data.status==="approved"){
-
- approved=true;
-
- clearInterval(pollTimer);
-
- statusEl.textContent="ACCESS GRANTED ✅";
-
- document.getElementById("tools").hidden=false;
-
- requestBtn.hidden=true;
-
- addLine("ADMIN APPROVED ACCESS.");
-
- }
-
- else if(
- data.status==="rejected" ||
- data.status==="expired"
- ){
-
- clearInterval(pollTimer);
-
- statusEl.textContent=
- data.status==="rejected"
- ? "ACCESS REJECTED ❌"
- : "REQUEST EXPIRED";
-
- requestBtn.disabled=false;
-
- addLine("ACCESS NOT GRANTED.");
-
- }
-
- }catch(error){
-
- statusEl.textContent="CONNECTION ISSUE...";
-
- }
-
+  const r=await fetch("/api/status/"+encodeURIComponent(sessionId));
+  const data=await r.json();
+  if(data.status==="approved"){
+   clearInterval(pollTimer);
+   document.getElementById("login").classList.add("hidden");
+   document.getElementById("tools").classList.remove("hidden");
+  }else if(data.status==="rejected"){
+   clearInterval(pollTimer);
+   document.getElementById("loginResult").textContent="Access rejected by administrator.";
+   document.getElementById("requestBtn").disabled=false;
+  }
+ }catch(e){}
 }
 
-
-// EXIT
+function showTool(id){
+ document.querySelectorAll(".tool").forEach(x=>x.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ document.getElementById(id).scrollIntoView({behavior:"smooth"});
+}
 
 async function exitApp(){
-
- if(sessionId && approved){
-
- try{
-
- await fetch("/api/exit",{
-
- method:"POST",
-
- headers:{
- "Content-Type":"application/json"
- },
-
- body:JSON.stringify({
- id:sessionId
- }),
-
- keepalive:true
-
- });
-
- }catch(error){}
-
+ if(pollTimer)clearInterval(pollTimer);
+ if(sessionId){
+  try{
+   await fetch("/api/exit",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({id:sessionId})
+   });
+  }catch(e){}
  }
-
- approved=false;
  sessionId=null;
-
- document.getElementById("tools").hidden=true;
-
- requestBtn.hidden=false;
- requestBtn.disabled=false;
-
- statusEl.textContent="YOU HAVE EXITED.";
-
- addLine("USER EXITED.");
-
+ document.getElementById("tools").classList.add("hidden");
+ document.getElementById("login").classList.remove("hidden");
+ document.getElementById("loginResult").textContent="You have exited.";
+ document.getElementById("requestBtn").disabled=false;
 }
 
+async function findIP(){
+ const out=document.getElementById("ipResult");
+ out.textContent="Checking...";
+ try{
+  const r=await fetch("https://api.ipify.org?format=json");
+  if(!r.ok)throw new Error("IP service unavailable");
+  const d=await r.json();
+  out.textContent="Public IP: "+d.ip+"\nThis does not show your exact physical location.";
+ }catch(e){out.textContent="Could not find IP. Check your internet connection.";}
+}
 
-// BEST EFFORT CLOSE NOTICE
+function normalizeURL(value){
+ let s=value.trim();
+ if(!/^https?:\/\//i.test(s))s="https://"+s;
+ return new URL(s);
+}
+
+function websiteInfo(){
+ const out=document.getElementById("infoResult");
+ try{
+  const u=normalizeURL(document.getElementById("infoUrl").value);
+  out.textContent=
+   "Hostname: "+u.hostname+
+   "\nProtocol: "+u.protocol+
+   "\nPort: "+(u.port||"Default")+
+   "\nPath: "+u.pathname+
+   "\nThis only reads the address you entered; it does not scan the website.";
+ }catch(e){out.textContent="Please enter a valid website address.";}
+}
+
+function checkURL(){
+ const out=document.getElementById("urlResult");
+ try{
+  const raw=document.getElementById("urlInput").value.trim();
+  const u=normalizeURL(raw);
+  let warnings=[];
+  if(u.protocol!=="https:")warnings.push("Warning: This address does not use HTTPS.");
+  if(u.username || u.password)warnings.push("Warning: Address contains username/password text.");
+  if(u.hostname.startsWith("xn--")||u.hostname.includes(".xn--"))warnings.push("Warning: Internationalized/punycode domain. Check spelling carefully.");
+  if(/^\d{1,3}(\.\d{1,3}){3}$/.test(u.hostname))warnings.push("Warning: Address uses a raw IP instead of a normal domain.");
+  if(raw.length>180)warnings.push("Warning: Unusually long URL.");
+  if(["bit.ly","tinyurl.com","t.co","is.gd"].includes(u.hostname.toLowerCase()))warnings.push("Warning: Shortened URL hides its final destination.");
+  out.textContent=warnings.length?warnings.join("\n"):"No basic warning found. This does NOT prove the website is safe.";
+ }catch(e){out.textContent="Please enter a valid URL.";}
+}
+
+function checkPassword(){
+ const p=document.getElementById("passwordInput").value;
+ const out=document.getElementById("passwordResult");
+ let score=0,notes=[];
+ if(p.length>=12)score++;else notes.push("Use at least 12 characters.");
+ if(/[a-z]/.test(p))score++;
+ if(/[A-Z]/.test(p))score++;
+ if(/[0-9]/.test(p))score++;
+ if(/[^A-Za-z0-9]/.test(p))score++;
+ if(p.length<8)score=0;
+ let level=score>=5?"Strong":score>=3?"Medium":"Weak";
+ out.textContent="Strength: "+level+"\nScore: "+score+"/5\n"+notes.join("\n")+"\nChecked locally in this browser. Never reuse important passwords.";
+}
+
+async function makeHash(){
+ const value=document.getElementById("hashInput").value;
+ const out=document.getElementById("hashResult");
+ if(!crypto.subtle){out.textContent="SHA-256 needs a secure browser context (HTTPS).";return;}
+ try{
+  const bytes=new TextEncoder().encode(value);
+  const hash=await crypto.subtle.digest("SHA-256",bytes);
+  out.textContent=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
+ }catch(e){out.textContent="Could not generate hash.";}
+}
+
+function encodeBase(){
+ try{
+  const bytes=new TextEncoder().encode(document.getElementById("baseInput").value);
+  let binary="";
+  bytes.forEach(b=>binary+=String.fromCharCode(b));
+  document.getElementById("baseResult").textContent=btoa(binary);
+ }catch(e){document.getElementById("baseResult").textContent="Could not encode text.";}
+}
+
+function decodeBase(){
+ try{
+  const binary=atob(document.getElementById("baseInput").value.trim());
+  const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
+  document.getElementById("baseResult").textContent=new TextDecoder("utf-8",{fatal:true}).decode(bytes);
+ }catch(e){document.getElementById("baseResult").textContent="Invalid Base64 or text encoding.";}
+}
+
+async function securityCheck(){
+ const out=document.getElementById("securityResult");
+ const secure=location.protocol==="https:";
+ let lines=[];
+ lines.push("HTTPS: "+(secure?"Enabled":"Not enabled"));
+ lines.push("Browser secure context: "+(window.isSecureContext?"Yes":"No"));
+ lines.push("Page origin: "+location.origin);
+ try{
+  const r=await fetch("/health",{cache:"no-store"});
+  lines.push("Server health endpoint: "+(r.ok?"Responding":"Not available"));
+ }catch(e){
+  lines.push("Server health endpoint: Not available");
+ }
+ lines.push("");
+ lines.push("Note: This is a basic check, not a full security audit.");
+ out.textContent=lines.join("\n");
+}
 
 window.addEventListener("pagehide",()=>{
-
- if(sessionId && approved){
-
- fetch("/api/exit",{
-
- method:"POST",
-
- headers:{
- "Content-Type":"application/json"
- },
-
- body:JSON.stringify({
- id:sessionId
- }),
-
- keepalive:true
-
- }).catch(()=>{});
-
+ if(sessionId){
+  fetch("/api/exit",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({id:sessionId}),
+   keepalive:true
+  }).catch(()=>{});
  }
-
 });
-
 </script>
-
 </body>
 </html>
